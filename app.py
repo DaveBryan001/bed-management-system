@@ -1,4 +1,4 @@
-from flask import flask
+from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from config import Config
@@ -31,6 +31,10 @@ api.add_resource(BedListResource, '/beds')
 
 api.add_resource(PatientResource, '/patients/<int:patient_id>')
 api.add_resource(PatientListResource, '/patients')
+
+@app.route('/test')
+def test():
+    return "Test Page"
 
 if __name__ == '__main__':
     with app.app_context():

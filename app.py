@@ -17,6 +17,10 @@ db.init_app(app)
 api = Api(app)
 jwt = JWTManager(app)
 
+@app.route('/')
+def home():
+    return 'Welcome to the Bed Management System!'
+
 api.add_resource(UserRegistration, '/register')
 api.add_resource(UserLogin, '/login')
 
@@ -32,9 +36,6 @@ api.add_resource(BedListResource, '/beds')
 api.add_resource(PatientResource, '/patients/<int:patient_id>')
 api.add_resource(PatientListResource, '/patients')
 
-@app.route('/test')
-def test():
-    return "Test Page"
 
 if __name__ == '__main__':
     with app.app_context():

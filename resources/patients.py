@@ -40,6 +40,7 @@ class PatientListResource(Resource):
         if bed and bed.status == 'occupied':
             return {'message': 'Bed is occupied'}, 400
         
+        bed.status = 'occupied'
         patient = Patient(name=args['name'], age=args['age'], bed_id=args['bed_id'])
         db.session.add(patient)
         db.session.commit()

@@ -14,12 +14,12 @@ class UserRegistration(Resource):
         if User.query.filter_by(username=username).first():
             return {'message': 'User already exists'}, 409
 
-            new_user = User(username=username)
-            new_user.set_password(password)
-            db.session.add(new_user)
-            db.session.commit()
+        new_user = User(username=username)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
 
-            return {'message': 'User created successfully'}, 201
+        return {'message': 'User created successfully'}, 201
 
             
 # User Login API

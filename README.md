@@ -79,11 +79,11 @@ Request Body:
 }
 ```
 Response:
-
 ```json
-201 Created: User created successfully.
+201 Created: User created sucessfully.
 409 Conflict: User already exists.
 ```
+
 
 User Login
 Endpoint: /login
@@ -180,7 +180,9 @@ Response:
 ```
 Example:
 ```
-curl -X PUT http://127.0.0.1:5000/hospitals/1 -H "Content-Type: application/json" -H "Authorization: Bearer <your_token>" -d '{"name": "Updated Hospital Name", "location": "456 New Address"}'
+curl -X PUT http://127.0.0.1:5000/hospitals/1 -H "Content-Type: application/json" -H
+"Authorization: Bearer <your_token>"
+-d '{"name": "Updated Hospital Name", "location": "456 New Address"}'
 ```
 #### Delete Hospital
 Endpoint: /hospitals/<int:hospital_id>
@@ -219,9 +221,11 @@ Response:
 ```
 Example:
 ```
-curl -X POST http://127.0.0.1:5000/departments -H "Content-Type: application/json" -H "Authorization: Bearer <your_token>" -d '{"name": "Cardiology", "hospital_id": 1}'
+curl -X POST http://127.0.0.1:5000/departments -H
+"Content-Type: application/json" -H "Authorization: Bearer <your_token>"
+-d '{"name": "Cardiology", "hospital_id": 1}'
 ```
-### Get All Departments
+#### Get All Departments
 Endpoint: /departments
 
 Method: GET
@@ -273,7 +277,9 @@ Response:
 ```
 Example:
 ```
-curl -X PUT http://127.0.0.1:5000/departments/1 -H "Content-Type: application/json" -H "Authorization: Bearer <your_token>" -d '{"name": "Updated Department Name", "hospital_id": 1}'
+curl -X PUT http://127.0.0.1:5000/departments/1 -H "Content-Type: application/json" -H
+"Authorization: Bearer <your_token>"
+-d '{"name": "Updated Department Name", "hospital_id": 1}'
 ```
 #### Delete Department
 Endpoint: /departments/<int:department_id>
@@ -313,7 +319,9 @@ Response:
 ```
 Example:
 ```
-curl -X POST http://127.0.0.1:5000/beds -H "Content-Type: application/json" -H "Authorization: Bearer <your_token>" -d '{"bed_number": 101, "status": "available", "department_id": 1}'
+curl -X POST http://127.0.0.1:5000/beds -H "Content-Type: application/json" -H
+"Authorization: Bearer <your_token>"
+-d '{"bed_number": 101, "status": "available", "department_id": 1}'
 ```
 #### Get All Beds
 Endpoint: /beds
@@ -368,7 +376,9 @@ Response:
 ```
 Example:
 ```
-curl -X PUT http://127.0.0.1:5000/beds/1 -H "Content-Type: application/json" -H "Authorization: Bearer <your_token>" -d '{"bed_number": 102, "status": "occupied", "department_id": 1}'
+curl -X PUT http://127.0.0.1:5000/beds/1 -H "Content-Type: application/json" -H
+"Authorization: Bearer <your_token>"
+-d '{"bed_number": 102, "status": "occupied", "department_id": 1}'
 ```
 #### Delete Bed
 Endpoint: /beds/<int:bed_id>
@@ -461,6 +471,64 @@ Response:
     "message": "Patient deleted"
 }
 ```
+
+#### Bed Availability AI Feature
+
+Description: This feature allows users to query the system for available beds using natural language.
+
+Endpoint: '/check_beds'
+
+Method: POST
+
+Request Body:
+```json
+{
+  "query": "Are there any beds available in Cardiology?"
+}
+```
+Required Parameter:
+query (string): The natural language question about bed availability.
+
+Example:
+```
+curl -X POST -H "Content-Type: application/json"
+    -d '{"query": "Are there any beds available in the ICU?"}' 
+    http://localhost:5000/check_beds
+```
+Response:
+```
+Success
+{
+  "message": "Yes, there are 2 available beds",
+  "department": "Cardiology",
+  "beds": [
+    {
+      "id": 1,
+      "bed_number": 101
+    },
+    {
+      "id": 2,
+      "bed_number": 102
+    }
+  ]
+}
+
+Failure
+{
+  "message": "Sorry, there are no available beds in Cardiology at the moment." 
+}
+```
+
+### Notes
++ The AI will attempt to identify the department mentioned in the query. If it cannot determine a department, it will search across all departments.
++ The query should be in English.
++ The beds array will only be included in the response if available beds are found.
++ This feature uses spaCy for natural language processing. It may not understand complex or ambiguous queries.
+
+#### Future Enhancements
+- Train the AI to recognize more specific bed types (ICU, private room, etc.).
+- Add a dialogue manager for more complex conversations.
+- Integrate with a voice assistant for voice-based queries.
 
 ## Authentication
 Each request to secured endpoints requires a JWT token in the 'Authorization' header:

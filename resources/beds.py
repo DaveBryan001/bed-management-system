@@ -2,6 +2,8 @@ from flask_restful import Resource, reqparse
 from models import Bed
 from database import db
 from flask_jwt_extended import jwt_required
+import spacy
+from flask import Flask, request, jsonify
 
 bed_parser = reqparse.RequestParser()
 bed_parser.add_argument(
@@ -64,3 +66,69 @@ class BedResource(Resource):
         db.session.delete(bed)
         db.session.commit()
         return {'message': 'Bed deleted'}
+    
+    
+    
+
+nlp = spacy.load("en_core_web_sm")
+
+def find_available_beds(query, db): 
+    """Processes a query to find available beds and queries the database.
+
+    Args:
+        query (str): The user's query about bed availability.
+        db: Your SQLAlchemy database instance (e.g., `db` from your database module).
+
+    Returns:
+        dict: A dictionary containing the response message, department (if any),
+              and a list of available beds (or an empty list if none).
+    """
+
+    doc = nlp(query)
+    department = None
+
+    for ent in doc.ents:
+        if ent.label_ == "ORG":  
+            department = ent.text
+            break  
+
+    available_beds = []
+    if department:
+        available_beds = db.session.query(Bed).filter_by(status='available', department_id=department).all()
+    else:
+        available_beds = db.session.query(Bed).filter_by(status='available').all()
+
+    num_beds = len(available_beds)
+
+    if num_beds == 1:
+        bed = available_beds[0]
+        response = {
+            "message": f"Yes, there is one bed available",
+            "department": department if department else "All departments",
+            "beds": [{"id": bed.id, "bed_number": bed.bed_number}]  
+        }
+    elif num_beds > 1:
+        response = {
+            "message": f"Yes, there are {num_beds} available beds",
+            "department": department if department else "All departments",
+            "beds": [{"id": bed.id, "bed_number": bed.bed_number} for bed in available_beds] 
+        }
+    else:
+        response = {
+            "message": f"Sorry, there are no available beds" +
+                       (f" in {department}" if department else "") +
+                       " at the moment."
+        }
+
+    return response
+
+class BedAvailabilityResource(Resource):
+    def post(self):
+        data = request.get_json()
+        query = data.get('query')
+
+        if not query:
+            return jsonify({"message": "Please provide a query."}), 400
+
+        response = find_available_beds(query, db)
+        return jsonify(response)

@@ -9,6 +9,7 @@ from resources.hospitals import HospitalResource, HospitalListResource
 from resources.departments import DepartmentResource, DepartmentListResource
 from resources.beds import BedResource, BedListResource
 from resources.patients import PatientResource, PatientListResource
+from resources.beds import find_available_beds, BedAvailabilityResource
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -35,6 +36,8 @@ api.add_resource(BedListResource, '/beds')
 
 api.add_resource(PatientResource, '/patients/<int:patient_id>')
 api.add_resource(PatientListResource, '/patients')
+
+api.add_resource(BedAvailabilityResource, '/check_beds')
 
 
 if __name__ == '__main__':

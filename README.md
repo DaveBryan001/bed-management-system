@@ -519,7 +519,7 @@ Failure
 }
 ```
 
-### Notes
+#### Notes
 + The AI will attempt to identify the department mentioned in the query. If it cannot determine a department, it will search across all departments.
 + The query should be in English.
 + The beds array will only be included in the response if available beds are found.
